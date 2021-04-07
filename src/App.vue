@@ -1,17 +1,41 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <h1>The Creatures of Imaginary Universes</h1>
+    <div class="main">
+      <characters-list :characters='characters' :selectedCharacter='selectedCharacter'/>
+      <character-detail v-if='selectedCharacter' :character='selectedCharacter'/>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import{eventBus} from './main.js';
+import CharacterDetail from './components/CharacterDetail';
+import CharacterList from './components/CharacterList';
+
+
 
 export default {
   name: 'App',
+  data(){
+    return {
+      characters: [],
+      selectedCharacter: null
+    };
+  },
+  mounted(){
+    fetch('https://rickandmortyapi.com/api/character/')
+    .then(res => res.json())
+    .then(characters => this.characters = characters.results)
+    
+    eventBus.$on('character-selected', (character) => {
+    this.selectedCharacter = character;
+    })
+  },
+
   components: {
-    HelloWorld
+    "character-detail": CharacterDetail,
+    "characters-list": CharacterList
   }
 }
 </script>
